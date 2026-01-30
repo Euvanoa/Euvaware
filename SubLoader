@@ -8,7 +8,7 @@ local CoreGui = game:GetService("CoreGui")
 
 -- Configuration
 local CORRECT_KEY = "Euvanoaware"
-local FIREBASE_FUNCTION_URL = "https://logexecution-5r2tbkyciq-uc.a.run.app"
+local FIREBASE_FUNCTION_URL = "https://logexecution-6l3uvhfada-uc.a.run.app"
 
 -- Function to get player stats
 local function getPlayerStats()
