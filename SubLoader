@@ -92,45 +92,57 @@ local function submitKey()
         if loadFunc then
             print("✅ Main system loaded")
             
-            -- Animate GUI closing
+            -- Show verified message
             status.Text = "✅ Verified!"
             status.TextColor3 = Color3.fromRGB(100, 255, 100)
             
             task.spawn(function()
                 local TweenService = game:GetService("TweenService")
                 
-                -- Step 1: Fold to right (width collapse)
-                local foldRight = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-                    Size = UDim2.new(0, 0, 0, 180),
-                    Position = UDim2.new(1, 0, 0.5, 0)
-                })
-                foldRight:Play()
+                -- Phase 1: Brief pause (stay centered)
                 task.wait(0.3)
                 
-                -- Step 2: Collapse height down
-                frame.AnchorPoint = Vector2.new(0.5, 0)
-                frame.Position = UDim2.new(1, 0, 0.5, -90)
+                -- Phase 2: Fold to right (width collapse while staying centered vertically)
+                local foldRight = TweenService:Create(frame, TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.InOut), {
+                    Size = UDim2.new(0, 80, 0, 180),
+                    Position = UDim2.new(1, -40, 0.5, 0)
+                })
+                foldRight:Play()
+                task.wait(0.4)
                 
-                local collapseDown = TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
-                    Size = UDim2.new(0, 0, 0, 0),
-                    Position = UDim2.new(1, 0, 0.5, 0)
+                -- Phase 3: Collapse down (height shrinks)
+                local collapseDown = TweenService:Create(frame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                    Size = UDim2.new(0, 80, 0, 0),
+                    Position = UDim2.new(1, -40, 0.5, 0)
                 })
                 collapseDown:Play()
-                task.wait(0.2)
+                task.wait(0.3)
                 
-                -- Step 3: Fade out
-                local fade = TweenService:Create(frame, TweenInfo.new(0.1, Enum.EasingStyle.Linear), {
+                -- Phase 4: Final shrink and fade (disappear completely)
+                local disappear = TweenService:Create(frame, TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.In), {
+                    Size = UDim2.new(0, 0, 0, 0),
                     BackgroundTransparency = 1
                 })
-                fade:Play()
-                task.wait(0.1)
+                
+                -- Fade all children too
+                for _, child in pairs(frame:GetDescendants()) do
+                    if child:IsA("GuiObject") then
+                        TweenService:Create(child, TweenInfo.new(0.2, Enum.EasingStyle.Linear), {
+                            BackgroundTransparency = 1,
+                            TextTransparency = 1
+                        }):Play()
+                    end
+                end
+                
+                disappear:Play()
+                task.wait(0.2)
                 
                 -- Delete GUI
                 gui:Destroy()
             end)
             
             -- Load main system after short delay
-            task.wait(0.2)
+            task.wait(0.4)
             loadFunc()
         else
             warn("❌ Failed to execute main system")
